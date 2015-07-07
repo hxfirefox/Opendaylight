@@ -1,7 +1,10 @@
 Lithium中关键特性更新
 ====================
 
-#Controller
+#Lithium特性更新概述
+
+#Lithium更新特性分析
+##Controller
 
 **更新：**
 
@@ -48,13 +51,13 @@ Lithium中关键特性更新
 
 >当转换上述消息时应确保WriteData/MergeData中的实例标识按stream wirter紧凑格式
 
-#AAA
+##AAA
 
 **更新：**
 
 - 增加数据持久化，Federation，SSO，额外拓展和提升
 
-#ALTO
+##ALTO
 
 **新增：**
  - 实现应用层数据优化（ALTO）协议，向应用提供网络信息
@@ -63,19 +66,19 @@ Lithium中关键特性更新
  >ODL提供的拓扑服务主要关注网络，对于应用而言暴露过多的网络细节，ALTO提供简化网络视角指导应用使用网络资源，详见RFC7285
  >大部分项目参与者为国内人员，包括清华、同济以及华为
 
-#BGP/LS PCEP
+##BGP/LS PCEP
 
 **更新：**
 
 - 增加BGP Flowspec，graceful restart，段路由，PCEP安全传输
  - 涉及如下RFC：5886，4486，5492，6286，5004，5575，7311，4724
 
-#CAPWAP
+##CAPWAP
 
 **新增：**
  - 实现ODL管理WTP网络设备
 
-#Device Identification and Drive Management
+##Device Identification and Drive Management
 
 **新增：**
 
@@ -89,37 +92,37 @@ Lithium中关键特性更新
   - **Define RPCs for Common “Features”** – 为上述特性定义RPC，Drivers实现特定设备的特性及RPC
  - DIDM使用SNMP南向插件并依赖AAA
 
-#DLUX
+##DLUX
 
 **更新：**
 
 - 支持Topology Framework、Topology Extension Points、Enhanced visualization capabilities
 
-#Group Based Policy
+##Group Based Policy
 
 **更新：**
 
 - 增加对OpenStack Neutron的支持，支持Service Function Chaining，OfOverlay对NAT的支持，table offsets
 
-#IoTDM
+##IoTDM
 
 **新增：**
 
 - 以数据为中心的中间件作为兼容oneM2M的IoTDM，并授权应用获取IoT数据
 
-#LACP
+##LACP
 
 **新增：**
 
 - 以MD-SAL服务方式实现链路聚合控制协议（LACP），用于自动发现和聚合控制器与交换机之间的多条链路 
 
-#Lisp Flow Mapping Service
+##Lisp Flow Mapping Service
 
 **更新：**
 
 - 改进ELP处理，北向API转为MD-SAL，Service Function Chaining的持续集成，Neutron提升
 
-#Network Intent Composition
+##Network Intent Composition
 
 **新增：**
 
@@ -128,14 +131,36 @@ Lithium中关键特性更新
 - 面向SDN应用，如OpenStack Neutron，Service Function Chaining，Group Based Policy
 - 可以使用控制协议有Openflow，OVSDB，I2RS，Netconf，SNMP
 
-#Neutron & OVSDB Services
+##Neutron & OVSDB Services
 
 **更新：**
 
 - API转为MD-SAL，增加功能校验支持LBaaS，增加Distributed Virtual Router、SNAT、External Gateway及Floating IP支持
 
-#OpenFlow Plugin
+##OpenFlow Plugin
 
 **更新：**
 
 - Lithium版本的OF Plugin进行了重新架构，支持基于MD-SAL的OF1.0、OF1.3，增加对TTP的支持
+- 修复Helium存在问题：**统计搜集性能提升**
+ - Helium版本中统计采用同一时刻向所有节点发送统计请求，引发统计响应风暴，导致CPU冲高及对MD-SAL存储的压力
+ - 按照连接数及各自表(Flow tables、Group、Meter)中的条目数进行动态间隔统计轮询
+ - 每个节点在统计间隔中进行统计轮询
+ - 只在前一次统计完成后才启动下一次统计
+ - 不同统计类型使用不同的统计周期，保持低优先级统计的初始周期间隔，并根据响应数量进行调整
+- 新增特性：
+  - 处理协议保留端口
+  - 拓扑能够在初始阶段频繁变化，到达稳态后平滑变动，Helium版本拓扑发送过多的LLDP，可考虑稳态时使用节点通告来发现拓扑变化
+  - 线程模型及报文处理优先级
+  - 端口配置
+  - 队列配置
+  - 角色请求
+  - OpenDaylight GUI感知OF1.3，例如：能够配置1.3风格的流表、meter、组表
+  - [多控制器和仲裁](https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Backlog:MultiControllerAndArbiterDesign)
+![enter image description here](https://wiki.opendaylight.org/images/d/dc/OFP-Arbiter.jpg)
+
+##Opflex
+
+**新增：**
+
+- The ODL Opflex Agent is a policy agent that works with OVS to enforce a group-based policy networking model with locally attached virtual machines or containers.
