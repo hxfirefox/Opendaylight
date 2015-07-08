@@ -1,9 +1,10 @@
 Lithium中关键特性更新
 ====================
 
-#Lithium特性更新概述
+#1. Lithium特性更新概述
 
-#Lithium更新特性分析
+#2. Lithium更新特性分析
+
 ##Controller
 
 **更新：**
@@ -163,4 +164,52 @@ Lithium中关键特性更新
 
 **新增：**
 
-- The ODL Opflex Agent is a policy agent that works with OVS to enforce a group-based policy networking model with locally attached virtual machines or containers.
+- Opflex策略代理协调OVS工作，执行基于组的策略模型
+
+##[Persistence Store Service](https://wiki.opendaylight.org/view/Project_Proposals:Persistence)
+
+**新增：**
+
+- 提供应用持久化服务，针对非模型数据，例如AAA、AADS、TSDR等，此框架统一持久化任务，以便应用可遵循系统化的方法实现持久化
+- 提供可拓展、可重用的软件平台，包括以下内容：
+ - API
+ - 抽象实现允许插入多种对象存储引擎，例如JPA、Cassandra、Mongo、HBase等，目前已支持JPA实现
+ - 一系列集成测试工具
+- SDN应用以下列方法与持久化数据进行交互，包含：
+ - 数据定义：定义新数据结构，删除数据结构，修改数据结构
+ - 数据维护：插入、更新、删除数据
+ - 数据检索：查询数据
+- 架构如下，图中RDBMS和NoSQL仅为强调多种不同的数据库(SQL vs NoSQL)，以及在该框架下可以运行多个数据库实例
+![enter image description here](https://wiki.opendaylight.org/images/3/37/HighLevelArchitecture.jpg)
+- 软件架构如下图所示
+![enter image description here](https://wiki.opendaylight.org/images/a/a2/SoftwareArchitecture.png)
+
+##Reservation
+
+**新增：**
+
+- 提供动态低级别的资源预留，用户可以将网络作为一个服务、连接或资源池（端口，带宽），其初衷是提供端到端的多层配置
+
+##Secure Network Bootstrapping Interface
+
+**更新：**
+
+- 为转发元素增加Linux副抽象，并提升特性抽象和引导基础架构
+
+##SFC
+
+**更新：**
+
+- 增加Yang模型来表示SFC；接收来自REST和RPC的需求表达式；构建SFC的界面；LISP支持；负载均衡功能分组；NSH、MPLS及VLAN的OF渲染器；南向REST接口；SFC-OVS for SFF bridges, tunnels, and ports CRUD via OVSDB; 报文分发器；与ODL_GBP集成
+
+##SNMP4SDN
+
+**更新：**
+
+- 增加关于ACL的流配置，通过REST API激活流配置及多厂商支持
+
+##SNMP Plugin
+
+**新增：**
+
+- 针对应用及控制通过SNMP与交换设备进行交互的需求，通过SNMP南向插件，应用变为SNMP管理与设备进行交互，该项目期望实现通用的SNMP实现
