@@ -3,6 +3,19 @@ Lithium中关键特性更新
 
 #1. Lithium特性更新概述
 
+Lithium相对于Helium更新特性共27项，其中原有特性提升或增强13项，新增特性14项，如下表所示
+
+|特性类型|相对于Helium|数量|说明|
+|:----:|:----|:----|:----|
+|协议类|新增|6|ALTO/Opflex/SNMP Plugin/LACP/Source-Group Tag Exchange Protocol/CAPWAP|
+|协议类|更新|2|Openflow Plugin/BGP/LS PCEP|
+|服务类|新增|1|Persistence Store Service|
+|服务类|更新|4|Lisp Flow Mapping Service/Neutron & OVSDB Services/VPN Service/AAA|
+|组件平台框架类|新增|5|Device Identification and Drive Management/Network Intent Composition/Reservation/Topology Processing Framework/Time Series Data Repository|
+|组件平台框架类|更新|3|Controller/DLUX/VTN|
+|接口策略类|新增|2|IoTDM/Unified Secure Channel|
+|接口策略类|更新|4|Group Based Policy/SNMP4SDN/Secure Network Bootstrapping Interface/SFC|
+
 #2. Lithium更新特性分析
 
 ##Controller
@@ -221,4 +234,34 @@ Lithium中关键特性更新
 
 **新增：**
 
-- SXP用于传递IP与源组标签绑定信息，源组使用唯一的SGT值标识。防火墙可 is an IETF published control protocol designed to propagate the binding between an IP address and a Source Group Tag (SGT). Within SXP, source groups are endpoints connecting to the network which have common network policies. Each source group is identified by a unique SGT value. SGTs can be used by firewalls (FW) to create topology independent Access Control List (ACL) decisions - since source and destination IP/SGT information can be sent to the firewall. This also provides FW ACL automation since at the time of new endpoint attachment to the network, SXP can update the FW of the new IP/SGT for the endpoint. By extending this type of topology independent policy definition and automation through the SDN controller, it becomes possible to apply it to other services and networking devices. Within ODL, manipulation of policy groups will often use Group Based Policy (GBP) infrastructure. Source groups in SXP have the same meaning as endpoint groups in ODL GBP. Thus the GBP infrastructure in ODL can be used with SXP SGTs.
+- SXP用于传递IP与源组标签绑定信息，源组使用唯一的SGT值标识。防火墙可使用SGT创建独立于拓扑的ACL(源和目的的IP/SGT信息都可被发送至防火墙)。当新的终端接入网络，SXP能够自动地更新防火墙中终端信息。在ODL中，通常使用GBP操作组策略。SXP中的源组与ODL GBP作用相同，因此GBP也可使用SXP SGT
+
+##Topology Processing Framework
+
+**新增：**
+
+- 提供一个框架用于简化拓扑数据的聚合和查询，以便于提供一个统一的拓扑视图，包括多协议、底层及叠加资源
+
+##Time Series Data Repository
+
+**新增：**
+
+- 用于搜集、存储、查询和维护ODL控制器时间序列数据，利用TSDR提供的功能，网络管理员可以利用这些数据驱动应用进行安全风险探测，性能分析，操作配置优化，流量工程，以及自动化智能网络分析
+
+##VPN Service
+
+**更新：**
+
+- L3 VPN服务API，与开源路有套件集成，如Quagga、RYU，OpenStack Neutron集成
+
+##VTN
+
+**更新：**
+
+- 迁移至MD-SAL，显著提升VTN中的策略管理，支持微软SVCMM
+
+##Unified Secure Channel
+
+**新增：**
+
+- USC框架提供中央服务器来协调终端之间的加密通信。USC提供了一个客户端代理，通知控制器对其加密功能，可以指示选择基于业务策略需要加密的流，潜在场景是为控制器之间通信加密
