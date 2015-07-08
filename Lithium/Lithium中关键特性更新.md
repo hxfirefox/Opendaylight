@@ -180,8 +180,11 @@ Lithium中关键特性更新
  - 数据维护：插入、更新、删除数据
  - 数据检索：查询数据
 - 架构如下，图中RDBMS和NoSQL仅为强调多种不同的数据库(SQL vs NoSQL)，以及在该框架下可以运行多个数据库实例
+
 ![enter image description here](https://wiki.opendaylight.org/images/3/37/HighLevelArchitecture.jpg)
+
 - 软件架构如下图所示
+
 ![enter image description here](https://wiki.opendaylight.org/images/a/a2/SoftwareArchitecture.png)
 
 ##Reservation
