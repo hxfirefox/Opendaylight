@@ -216,3 +216,9 @@ Lithium中关键特性更新
 **新增：**
 
 - 针对应用及控制通过SNMP与交换设备进行交互的需求，通过SNMP南向插件，应用变为SNMP管理与设备进行交互，该项目期望实现通用的SNMP实现
+
+##Source-Group Tag Exchange Protocol
+
+**新增：**
+
+- SXP用于传递IP与源组标签绑定信息，源组使用唯一的SGT值标识。防火墙可 is an IETF published control protocol designed to propagate the binding between an IP address and a Source Group Tag (SGT). Within SXP, source groups are endpoints connecting to the network which have common network policies. Each source group is identified by a unique SGT value. SGTs can be used by firewalls (FW) to create topology independent Access Control List (ACL) decisions - since source and destination IP/SGT information can be sent to the firewall. This also provides FW ACL automation since at the time of new endpoint attachment to the network, SXP can update the FW of the new IP/SGT for the endpoint. By extending this type of topology independent policy definition and automation through the SDN controller, it becomes possible to apply it to other services and networking devices. Within ODL, manipulation of policy groups will often use Group Based Policy (GBP) infrastructure. Source groups in SXP have the same meaning as endpoint groups in ODL GBP. Thus the GBP infrastructure in ODL can be used with SXP SGTs.
