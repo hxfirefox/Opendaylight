@@ -1,6 +1,10 @@
 Lithium中关键特性更新
 ====================
 
+**Author**: hxfirefox
+**Date**: 7/9/2015
+**Contact**: hxfirefox@gmail.com
+
 #1. Lithium特性更新概述
 
 Lithium相对于Helium更新特性共27项，其中原有特性提升或增强13项，新增特性14项，如下表所示
@@ -172,9 +176,9 @@ Lithium相对于Helium更新特性共27项，其中原有特性提升或增强13
   - 线程模型及报文处理优先级
   - 端口配置
   - 队列配置
-  - 角色请求
+  - **角色请求**
   - OpenDaylight GUI感知OF1.3，例如：能够配置1.3风格的流表、meter、组表
-  - [多控制器和仲裁](https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Backlog:MultiControllerAndArbiterDesign)
+  - [**多控制器和仲裁**](https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Backlog:MultiControllerAndArbiterDesign)
 ![enter image description here](https://wiki.opendaylight.org/images/d/dc/OFP-Arbiter.jpg)
 
 ##Opflex
@@ -269,3 +273,28 @@ Lithium相对于Helium更新特性共27项，其中原有特性提升或增强13
 **新增：**
 
 - USC框架提供中央服务器来协调终端之间的加密通信。USC提供了一个客户端代理，通知控制器对其加密功能，可以指示选择基于业务策略需要加密的流，潜在场景是为控制器之间通信加密
+
+#3. Lithium更新特性总结
+
+Lithium相对Helium的更新主要体现在以下几个方面：
+
+- 多协议支持
+ - 部分Helium中的协议得到增强和提升，如BGPCEP、Openflow Plugin，修订了Helium版本中存在的问题；
+ - 网络应用相关协议增加，如ALTO、LACP、Source-Group Tag Exchange Protocol、Opflex，将为将来更多的网络应用提供较完备的基础服务；
+ - 更多南向协议支持，如SNMP、OVSDB；
+ - 开始关注其他网络领域，如CAPWAP与IoTDM，分别针对WLAN与物联网；
+
+- 易用性得到提升
+ - Lithium相对Helium提供更多的功能，帮助网络管理人员分析、整合网络资源，例如，Topology Processing Framework提供统一拓扑试图，Time Series Data Repository提供性能分析数据源；Network Intent Composition提供面向网络行为的网络资源指导
+ - 作为平台提供更多基础服务，提升开发人员开发效率，例如，Persistence Store Service提供非模型数据的存储，更加提供了对存储行为的抽象，方便开发者在ODL中集成不同类型的数据库；DIDM提供针对特定设备不同限制与性能的抽象与管理
+
+- 性能提升是Lithium的主题
+ - 在Lithium已经交付的特性中，不少是对Helium的性能提升项目，例如，Controller中提交的相关特性主要针对提升MD-SAL存储性能及；Openflow Plugin中提交的相关特性也解决了原有Helium中统计性能问题
+
+- 后续需要重点关注
+ - **Controller**，针对MD-SAL的提升对集群，及对原有Helium版本的功能影响
+ - **Device Identification and Drive Management**，提供多厂商设备集成的管理
+ - **OpenFlow Plugin**，新增特性对集群和主备切换的影响
+ - **Persistence Store Service**，对非模型数据存储具有指导意义，后续持久化存储的方向
+ - **Topology Processing Framework**，对现有Topology功能的影响及对此特性的可能的使用方法
+ - **Time Series Data Repository**，作为性能分析工具的可行性，并对网络管理方法提出新的角度
