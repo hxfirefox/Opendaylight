@@ -92,6 +92,8 @@ Lithium相对于Helium更新特性共27项，其中原有特性提升或增强13
 **新增：**
  - 实现ODL管理WTP网络设备
 
+>此项特性针对WLAN
+
 ##Device Identification and Drive Management
 
 **新增：**
@@ -123,6 +125,8 @@ Lithium相对于Helium更新特性共27项，其中原有特性提升或增强13
 **新增：**
 
 - 以数据为中心的中间件作为兼容oneM2M的IoTDM，并授权应用获取IoT数据
+
+>此项特性针对物联网
 
 ##LACP
 
