@@ -36,5 +36,11 @@ DIDM框架提供了以下功能：
 ![ident mrg](https://wiki.opendaylight.org/images/d/d2/Ident_mrg.jpg)
 
 #接口参考文档
+
 访问http://${CONTROLLER-IP}:8181/apidoc/explorer/index.html，其中的DIDM部分可查阅REST
 
+#源码分析
+
+项目代码结构如图所示：
+
+![project code structure](D:\workspace\picpick\code_struct.png)
