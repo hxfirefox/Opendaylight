@@ -43,4 +43,4 @@ DIDM框架提供了以下功能：
 
 项目代码结构如图所示：
 
-![project code structure](D:\workspace\picpick\code_struct.png)
+![project code structure](https://github.com/hxfirefox/Opendaylight/tree/master/Lithium/resource/code_struct.jpg)
