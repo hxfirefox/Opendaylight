@@ -11,9 +11,29 @@ DIDM是设备标识与驱动管理(Device Identification and Driver Management)�
 #架构
 DIDM框架提供了以下功能：
 
-- *发现(Discovery)* - 判断设备是否属于控制器控制，以及是否可以建立与控制器的连接，发现功能提供两种机制：1）使用OpenFlow，2）通过手动方式，如GUI或REST API
-- *识别(Identification)* – 判断设备类型
-- *驱动注册(Driver Registration)* – 采用routed RPCs方式注册设备驱动
-- *同步(Synchronization)* – 设备信息、配置、链接搜集
-- *通用特性的数据模型(Data Models for Common Features)* – 定义通用特性(例如，VLAN配置)的数据模型，一旦定义所述数据模型，则对通用特性的操作可以通过将数据写入模型的方式进行
-- *通用特性的RPC(RPCs for Common Features)* – 通用特性的API采用RPC方式，驱动实现RPC以支持相关特性
+- **发现(Discovery)** - 判断设备是否属于控制器控制，以及是否可以建立与控制器的连接，发现功能提供两种机制：1）使用OpenFlow协议，2）非OpenFlow设备通过手动方式，如GUI或REST API
+- **识别(Identification)** – 判断设备类型
+- **驱动注册(Driver Registration)** – 采用routed RPCs方式注册设备驱动
+- **同步(Synchronization)** – 设备信息、配置、链接搜集
+- **通用特性的数据模型(Data Models for Common Features)** – 定义通用特性(例如，VLAN配置)的数据模型，一旦定义所述数据模型，则对通用特性的操作可以通过将数据写入模型的方式进行
+- **通用特性的RPC(RPCs for Common Features)** – 通用特性的API采用RPC方式，驱动实现RPC以支持相关特性
+
+#处理流程
+
+>用于手动发现的API将在下个版本中提供
+
+1. 设备与控制器建立连接Device connects to the controller through Openflowplugin discovery
+2. 在config和operational存储中创建资产节点
+3. 完成operational树中的创建后，识别管理(Identification Manager)将收到数据变更通知
+4. 识别管理将按照(Openflow，SNMP，若均不是则标识为unknown)的顺序从设备获取信息
+5. 完成识别后，将在operational树中增加设备类型信息
+6. 当应用设备类型信息时，设备驱动将收到相应的通知
+7. 驱动负责收集同步数据
+8. 驱动注册routed RPC或数据变更通知
+
+基本过程如下图所示：
+![image](https://wiki.opendaylight.org/view/File:Ident_mrg.jpg)
+
+#接口参考文档
+访问http://${CONTROLLER-IP}:8181/apidoc/explorer/index.html，其中的DIDM部分可查阅REST
+
