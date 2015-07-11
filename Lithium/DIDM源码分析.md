@@ -33,7 +33,7 @@ DIDM框架提供了以下功能：
 
 基本过程如下图所示：
 
-![ident mrg](https://wiki.opendaylight.org/view/File:Ident_mrg.jpg)
+![ident mrg](https://wiki.opendaylight.org/images/d/d2/Ident_mrg.jpg)
 
 #接口参考文档
 访问http://${CONTROLLER-IP}:8181/apidoc/explorer/index.html，其中的DIDM部分可查阅REST
