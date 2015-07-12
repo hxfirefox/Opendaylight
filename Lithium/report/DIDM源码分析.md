@@ -139,4 +139,13 @@ container device-types {
     }
 ```
 
+按照**处理流程**章节中流程图，DeviceIdentificationManager应当以inventory中数据变更事件驱动，因此在创建其实例过程中主要是注册数据变化监听，如下所示：
+
+```java
+dataChangeListenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, NODE_IID, this, AsyncDataBroker.DataChangeScope.BASE);
+        if (dataChangeListenerRegistration == null) {
+            LOG.error("Failed to register onDataChanged Listener");
+        }
+```
+
 ##drivers
