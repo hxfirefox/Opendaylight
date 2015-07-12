@@ -95,7 +95,7 @@ augment "/inv:nodes/inv:node" {
 ```
 
 如上述定义，基本数据类型为device-type-base，用于处理被成功识别的设备；而unkonwn-device-type在此基础上继承得到，处理无法识别的设备，同时使用augment，拓展了inventory node，为其增加了一个叶节点device-type，其中存储设备类型，也即可以从inventory中获得关于设备类型的信息。
-在inventory node增加设备类型信息的同时，DIDM还设计了一个存储完整设备信息的datastore，并在*didm-device-types.yang*中进行了定义，如下所示：
+在inventory node增加设备类型信息的同时，DIDM还设计了一个存储完整设备信息的datastore，可以通过外部配置设备信息，在*didm-device-types.yang*中进行了定义，如下所示：
 
 ```
 container device-types {
@@ -148,12 +148,59 @@ if (dataChangeListenerRegistration == null) {
 }
 ```
 
-当有数据变化消息时，会触发onDataChanged方法的调用，由onDataChanged调用handleDataCreated方法，handleDataCreated方法为接受的每个变化数据，启动一个线程，该线程的任务是等待250ms，再次读取inventory中的数据(从其注释看，这么做的原因是需要的信息附着到node上的速度较慢，需要等待250ms)，使用键值为更新数据中的node，由于透过拓展，使得inventory node中可以携带设备类型信息，因此使用node为键值可以查询到设备类型。数据获得成功后，进入设备识别流程，调用方法identifyDevice。
+当有数据变化消息时，会触发onDataChanged方法的调用，由onDataChanged调用handleDataCreated方法，handleDataCreated方法为接受的每个变化数据，启动一个线程，该线程的任务是等待250ms，再次读取inventory中的FlowCapableNode数据(从其注释看，这么做的原因是需要的信息附着到node上的速度较慢，需要等待250ms)，使用键值为更新数据中的node。数据获得成功后，进入设备识别流程，调用方法identifyDevice。
 
-方法identifiyDevice实现了流程图中描述的步骤2～4，包括
+方法identifiyDevice实现了流程图中描述的步骤3～4，包括
 
-- 通知
-- 查询
-- 设置
+- 监听inventory node变化
+- 填充inventory中的DeviceType
+
+首先，从datastore DeviceTypes中读取已经配置的设备信息，包括类型，厂商，硬件信息，对OpenFlow信息进行匹配，匹配源来自node中的FlowCapableNode，如下所示：
+
+```java
+List<DeviceTypeInfo> dtiInfoList = readDeviceTypeInfoFromMdsalDataStore();
+
+// 1) check for OF match
+FlowCapableNode flowCapableNode = node.getAugmentation(FlowCapableNode.class);
+checkOFMatch(path,node,flowCapableNode,dtiInfoList);
+```
+
+其中的匹配流程调用checkOFMatch方法，具体执行过程是将厂商及硬件信息进行比较，如厂商信息相同，且硬件信息包含在配置的信息中，则认为设备类型属于，如下所示：
+
+```java
+private void checkOFMatch(final InstanceIdentifier<Node> path, Node node, FlowCapableNode flowCapableNode, List<DeviceTypeInfo> dtiInfoList ){
+	 if (flowCapableNode != null) {
+         String hardware = flowCapableNode.getHardware();
+         String manufacturer = flowCapableNode.getManufacturer();
+         String serialNumber = flowCapableNode.getSerialNumber();
+         String software = flowCapableNode.getSoftware();
+
+         LOG.debug("Node '{}' is FlowCapable (\"{}\", \"{}\", \"{}\", \"{}\")",
+                 node.getId().getValue(), hardware, manufacturer, serialNumber, software);
+
+         // TODO: is there a more efficient way to do this?
+         for(DeviceTypeInfo dti: dtiInfoList) {
+             // if the manufacturer matches and there is a h/w match
+             if (manufacturer != null && (manufacturer.equals(dti.getOpenflowManufacturer()))) {
+                 List<String> hardwareValues = dti.getOpenflowHardware();
+                 if(hardwareValues != null && hardwareValues.contains(hardware)) {
+                         setDeviceType(dti.getDeviceType(), path);
+                         return;
+                 }
+             }
+         }
+     }
+
+}
+```
+
+设备匹配后，则调用setDeviceType对inventory node中的DeviceType进行填充。如下所示：
+
+```java
+final InstanceIdentifier<DeviceType> deviceTypePath = path.augmentation(DeviceType.class);
+final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+
+tx.merge(LogicalDatastoreType.OPERATIONAL, deviceTypePath, new DeviceTypeBuilder().setDeviceType(deviceType).build());
+```
 
 ##drivers
