@@ -133,19 +133,21 @@ container device-types {
 
 ```java
 @Override
-    public java.lang.AutoCloseable createInstance() {
-        LOG.trace("Creating DeviceIdentificationManager instance");
-        return new org.opendaylight.didm.identification.impl.DeviceIdentificationManager(getDataBrokerDependency(), getRpcRegistryDependency());
-    }
+public java.lang.AutoCloseable createInstance() {
+    LOG.trace("Creating DeviceIdentificationManager instance");
+    return new org.opendaylight.didm.identification.impl.DeviceIdentificationManager(getDataBrokerDependency(), getRpcRegistryDependency());
+}
 ```
 
 按照**处理流程**章节中流程图，DeviceIdentificationManager应当以inventory中数据变更事件驱动，因此在创建其实例过程中主要是注册数据变化监听，如下所示：
 
 ```java
 dataChangeListenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, NODE_IID, this, AsyncDataBroker.DataChangeScope.BASE);
-        if (dataChangeListenerRegistration == null) {
-            LOG.error("Failed to register onDataChanged Listener");
-        }
+if (dataChangeListenerRegistration == null) {
+    LOG.error("Failed to register onDataChanged Listener");
+}
 ```
+
+当有数据变化消息时，会触发onDataChanged方法的调用，由onDataChanged调用handleDataCreated方法，handleDataCreated方法为接受的每个变化数据，启动一个线程，该线程的任务是等待250ms，再次读取inventory中的数据(从其注释看，这么做的原因是需要的信息附着到node上的速度较慢，需要等待250ms)，使用键值为更新数据中的node，由于透过拓展，使得inventory node中可以携带设备类型信息，因此使用node为键值可以查询到设备类型。数据获得成功后，进入设备识别流程，调用方法identifyDevice。
 
 ##drivers
