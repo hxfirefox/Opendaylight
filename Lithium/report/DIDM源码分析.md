@@ -71,7 +71,8 @@ DIDM框架提供了以下功能：
 ##identification
 
 包含identification/api与identification/impl两个模块，其中api为identification的数据模型定义，如DeviceTyps的定义、inventory node的扩展等，采用yang实现；impl为identification的处理流程，包含**处理流程**章节所述的步骤3～5，采用Java及yang实现。
-在api中定义了DIDM使用的DeviceTypes基本数据类型，在didm-identification.yang中有如下定义：
+
+在api中定义了DIDM使用的DeviceTypes基本数据类型，在*didm-identification.yang*中有如下定义：
 
 ```
 identity device-type-base {
@@ -94,7 +95,7 @@ identity device-type-base {
 ```
 
 如上述定义，基本数据类型为device-type-base，用于处理被成功识别的设备；而unkonwn-device-type在此基础上继承得到，处理无法识别的设备，同时使用augment，拓展了inventory node，为其增加了一个叶节点device-type，其中存储设备类型，也即可以从inventory中获得关于设备类型的信息。
-在inventory node增加设备类型信息的同时，DIDM还设计了一个存储完整设备信息的datastore，并在didm-device-types中进行了定义，如下所示：
+在inventory node增加设备类型信息的同时，DIDM还设计了一个存储完整设备信息的datastore，并在*didm-device-types.yang*中进行了定义，如下所示：
 
 ```
 container device-types {
@@ -125,6 +126,17 @@ container device-types {
         }
     }
 ```
+
 此datastore中定义包含信息有device-type(设备类型)，同时也是该datastore的键值；openflow-manufacturer(设备厂商)；openflow-hardware(硬件信息，通常应当是硬件地址信息，即MAC)，注意硬件信息以列表呈现，即设备可能包含多个硬件；sysoid(SNMP相关信息)，同样以列表呈现。
+
+在impl中，*DeviceIdentificationManageMoudle.java*是didm-identification-impl bundle的入口文件，主要作用在于其中的createInstance方法，如下所示，将创建DeviceIdentificationManager实例，此实例将负责处理设备的识别流程。
+
+```java
+@Override
+    public java.lang.AutoCloseable createInstance() {
+        LOG.trace("Creating DeviceIdentificationManager instance");
+        return new org.opendaylight.didm.identification.impl.DeviceIdentificationManager(getDataBrokerDependency(), getRpcRegistryDependency());
+    }
+```
 
 ##drivers
