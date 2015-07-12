@@ -203,4 +203,19 @@ final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
 tx.merge(LogicalDatastoreType.OPERATIONAL, deviceTypePath, new DeviceTypeBuilder().setDeviceType(deviceType).build());
 ```
 
+接下来，验证sysoid，调用SNMPSevice的RPC方法获取了设备的sysoid，如下所示：
+
+```java
+FetchSysOid fetchSysOid = new FetchSysOid(rpcProviderRegistry);
+String sysOid = fetchSysOid.fetch(ipStr);
+```
+
+获取sysoid后与配置信息进行比较，最终也会对inventory node中的DeviceType进行填充，上述流程保证了OpenFlow设备与SNMP设备均可以正确地添加DeviceType。
+
+当OpenFlow与SNMP方式均匹配失败，则设备将被填充未知设备类型，如下所示：
+
+```java
+setDeviceType(UNKNOWN_DEVICE_TYPE, path);
+```
+
 ##drivers
