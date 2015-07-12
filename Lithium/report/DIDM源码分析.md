@@ -93,7 +93,7 @@ identity device-type-base {
     }
 ```
 
-如上述定义，基本数据类型为device-type-base，而unkonwn-device-type在此基础上继承得到，同时使用augment，拓展了inventory node，为其增加了一个叶节点device-type，其中存储设备类型，也即可以从inventory中获得关于设备类型的信息。
+如上述定义，基本数据类型为device-type-base，用于处理被成功识别的设备；而unkonwn-device-type在此基础上继承得到，处理无法识别的设备，同时使用augment，拓展了inventory node，为其增加了一个叶节点device-type，其中存储设备类型，也即可以从inventory中获得关于设备类型的信息。
 在inventory node增加设备类型信息的同时，DIDM还设计了一个存储完整设备信息的datastore，并在didm-device-types中进行了定义，如下所示：
 
 ```
@@ -125,5 +125,6 @@ container device-types {
         }
     }
 ```
+此datastore中定义包含信息有device-type(设备类型)，同时也是该datastore的键值；openflow-manufacturer(设备厂商)；openflow-hardware(硬件信息，通常应当是硬件地址信息，即MAC)，注意硬件信息以列表呈现，即设备可能包含多个硬件；sysoid(SNMP相关信息)，同样以列表呈现。
 
 ##drivers
