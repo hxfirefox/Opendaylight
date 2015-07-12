@@ -67,3 +67,63 @@ DIDM框架提供了以下功能：
     <bundle>mvn:org.opendaylight.didm/didm-drivers-api/${project.version}</bundle>
   </feature>
 ```
+
+##identification
+
+包含identification/api与identification/impl两个模块，其中api为identification的数据模型定义，如DeviceTyps的定义、inventory node的扩展等，采用yang实现；impl为identification的处理流程，包含**处理流程**章节所述的步骤3～5，采用Java及yang实现。
+在api中定义了DIDM使用的DeviceTypes基本数据类型，在didm-identification.yang中有如下定义：
+
+```
+identity device-type-base {
+        description "base identity for all device type identifiers";
+    }
+
+    identity unknown-device-type {
+        description "Indicates the device type could not be identified.";
+        base device-type-base;
+    }
+
+    augment "/inv:nodes/inv:node" {
+        ext:augment-identifier "device-type";
+        leaf device-type {
+            type identityref {
+                base device-type-base;
+            }
+        }
+    }
+```
+
+如上述定义，基本数据类型为device-type-base，而unkonwn-device-type在此基础上继承得到，同时使用augment，拓展了inventory node，为其增加了一个叶节点device-type，其中存储设备类型，也即可以从inventory中获得关于设备类型的信息。
+在inventory node增加设备类型信息的同时，DIDM还设计了一个存储完整设备信息的datastore，并在didm-device-types中进行了定义，如下所示：
+
+```
+container device-types {
+        list device-type-info {
+            key "device-type";
+
+            leaf device-type {
+                type identityref {
+                    base id:device-type-base;
+                }
+                description "identifier for a list entry, the device type name.";
+            }
+
+            leaf openflow-manufacturer {
+                type string;
+                description "The openflow manufacturer of the device.";
+            }
+
+            leaf-list openflow-hardware {
+                type string;
+                description "The openflow hardware of the device.";
+            }
+
+            leaf-list sysoid {
+                type string;
+                description "The SNMP sysObjectId that uniquely identifies the device";
+            }
+        }
+    }
+```
+
+##drivers
