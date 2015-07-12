@@ -48,24 +48,24 @@ DIDM框架提供了以下功能：
 整个代码结构可以按加载内容分为两部分，第一部分是DIDM框架代码(除vendor外的目录)，第二部分是DIDM驱动范例(包含了独立的features)。DIDM框架按照features下features.xml中的描述，如下所示，主要包含didm-identification-api、didm-identification-impl、didm-drivers-api上述3个bundle，分别对应识别管理与驱动接口两个部分功能。
 
 ```xml
-  <feature name='odl-didm-identification-api' version='${project.version}' description='OpenDaylight :: didm identification :: api'>
-    <feature version='${ofplugin.version}'>odl-openflowplugin-nsf-model</feature>
+<feature name='odl-didm-identification-api' version='${project.version}' description='OpenDaylight :: didm identification :: api'>
+  <feature version='${ofplugin.version}'>odl-openflowplugin-nsf-model</feature>
 
-    <bundle>mvn:org.opendaylight.didm/didm-identification-api/${project.version}</bundle>
-  </feature>
-  <feature name='odl-didm-identification' version='${project.version}' description='OpenDaylight :: didm identification'>
-    <feature version='${ofplugin.version}'>odl-openflowplugin-nsf-services</feature>
-    <feature version='${snmp.version}'>odl-snmp-plugin</feature>
-    <feature version='${project.version}'>odl-didm-identification-api</feature>
+  <bundle>mvn:org.opendaylight.didm/didm-identification-api/${project.version}</bundle>
+</feature>
+<feature name='odl-didm-identification' version='${project.version}' description='OpenDaylight :: didm identification'>
+  <feature version='${ofplugin.version}'>odl-openflowplugin-nsf-services</feature>
+  <feature version='${snmp.version}'>odl-snmp-plugin</feature>
+  <feature version='${project.version}'>odl-didm-identification-api</feature>
 
-    <bundle>mvn:org.opendaylight.didm/didm-identification-impl/${project.version}</bundle>
-    <configfile finalname="${config.configfile.directory}/didm-identification.xml">mvn:org.opendaylight.didm/didm-identification-impl/${project.version}/xml/config</configfile>
-  </feature>
-  <feature name='odl-didm-drivers-api' version='${project.version}' description='OpenDaylight :: didm drivers :: api'>
-    <feature version='${ofplugin.version}'>odl-openflowplugin-nsf-model</feature>
+  <bundle>mvn:org.opendaylight.didm/didm-identification-impl/${project.version}</bundle>
+  <configfile finalname="${config.configfile.directory}/didm-identification.xml">mvn:org.opendaylight.didm/didm-identification-impl/${project.version}/xml/config</configfile>
+</feature>
+<feature name='odl-didm-drivers-api' version='${project.version}' description='OpenDaylight :: didm drivers :: api'>
+  <feature version='${ofplugin.version}'>odl-openflowplugin-nsf-model</feature>
 
-    <bundle>mvn:org.opendaylight.didm/didm-drivers-api/${project.version}</bundle>
-  </feature>
+  <bundle>mvn:org.opendaylight.didm/didm-drivers-api/${project.version}</bundle>
+</feature>
 ```
 
 ##identification
@@ -76,22 +76,22 @@ DIDM框架提供了以下功能：
 
 ```
 identity device-type-base {
-        description "base identity for all device type identifiers";
-    }
+    description "base identity for all device type identifiers";
+}
 
-    identity unknown-device-type {
-        description "Indicates the device type could not be identified.";
-        base device-type-base;
-    }
+identity unknown-device-type {
+    description "Indicates the device type could not be identified.";
+    base device-type-base;
+}
 
-    augment "/inv:nodes/inv:node" {
-        ext:augment-identifier "device-type";
-        leaf device-type {
-            type identityref {
-                base device-type-base;
-            }
+augment "/inv:nodes/inv:node" {
+    ext:augment-identifier "device-type";
+    leaf device-type {
+        type identityref {
+            base device-type-base;
         }
     }
+}
 ```
 
 如上述定义，基本数据类型为device-type-base，用于处理被成功识别的设备；而unkonwn-device-type在此基础上继承得到，处理无法识别的设备，同时使用augment，拓展了inventory node，为其增加了一个叶节点device-type，其中存储设备类型，也即可以从inventory中获得关于设备类型的信息。
@@ -99,32 +99,32 @@ identity device-type-base {
 
 ```
 container device-types {
-        list device-type-info {
-            key "device-type";
+    list device-type-info {
+        key "device-type";
 
-            leaf device-type {
-                type identityref {
-                    base id:device-type-base;
-                }
-                description "identifier for a list entry, the device type name.";
+        leaf device-type {
+            type identityref {
+                base id:device-type-base;
             }
+            description "identifier for a list entry, the device type name.";
+        }
 
-            leaf openflow-manufacturer {
-                type string;
-                description "The openflow manufacturer of the device.";
-            }
+        leaf openflow-manufacturer {
+            type string;
+            description "The openflow manufacturer of the device.";
+        }
 
-            leaf-list openflow-hardware {
-                type string;
-                description "The openflow hardware of the device.";
-            }
+        leaf-list openflow-hardware {
+            type string;
+            description "The openflow hardware of the device.";
+        }
 
-            leaf-list sysoid {
-                type string;
-                description "The SNMP sysObjectId that uniquely identifies the device";
-            }
+        leaf-list sysoid {
+            type string;
+            description "The SNMP sysObjectId that uniquely identifies the device";
         }
     }
+}
 ```
 
 此datastore中定义包含信息有device-type(设备类型)，同时也是该datastore的键值；openflow-manufacturer(设备厂商)；openflow-hardware(硬件信息，通常应当是硬件地址信息，即MAC)，注意硬件信息以列表呈现，即设备可能包含多个硬件；sysoid(SNMP相关信息)，同样以列表呈现。
