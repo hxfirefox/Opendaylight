@@ -22,7 +22,7 @@ DIDM框架提供了以下功能：
 
 >用于手动发现的API将在下个版本中提供
 
-1. 设备与控制器建立连接Device connects to the controller through Openflowplugin discovery
+1. 设备与控制器建立连接
 2. 在config和operational存储中创建资产节点
 3. 完成operational树中的创建后，识别管理(Identification Manager)将收到数据变更通知
 4. 识别管理将按照(Openflow，SNMP，若均不是则标识为unknown)的顺序从设备获取信息
