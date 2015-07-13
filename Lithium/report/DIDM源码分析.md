@@ -301,4 +301,28 @@ public OpenFlowDeviceDriver(DataBroker dataBroker, RpcProviderRegistry rpcRegist
 }
 ```
 
-当监听数据变化时，OpenFlowDeviceDriver在onDataChanged方法中对其持有的RPC进行相应操作，首先，当DeviceType变化为添加时，过滤属于HP3800的变化，并按node节点注册routed RPC，如下所示：
+当监听数据变化时，OpenFlowDeviceDriver在onDataChanged方法中对其持有的RPC进行相应操作，首先，当DeviceType变化为添加时，过滤属于HP3800的变化，并按node节点注册routed RPC，并添加相应记录，如下所示：
+
+```java
+if(createdData != null) {
+    for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : createdData.entrySet()) {
+        DeviceType deviceType = (DeviceType)entry.getValue();
+        if(isHP3800DeviceType(deviceType.getDeviceType())) {
+            registerRpcService(entry.getKey().firstIdentifierOf(Node.class));
+        }
+    }
+}
+```
+
+当DeviceType变化为移除时，同样的操作，此时需要按node移除注册记录，如下所示：
+
+```java
+if((removedPaths != null) && !removedPaths.isEmpty()) {
+    for (InstanceIdentifier<?> removedPath : removedPaths) {
+        DeviceType deviceType = (DeviceType)change.getOriginalData().get(removedPath);
+        if(isHP3800DeviceType(deviceType.getDeviceType())) {
+            closeRpcRegistration(removedPath.firstIdentifierOf(Node.class));
+        }
+    }
+}
+```
