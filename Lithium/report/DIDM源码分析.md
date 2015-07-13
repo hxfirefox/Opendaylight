@@ -265,4 +265,40 @@ public interface OpenflowFeatureService
 
 ##vendor
 
-在此目录下，以HP3800和mininet为范例，展示了厂商定制化的driver如何实现，下面以HP3800为例简单说明。
+在此目录下，以HP3800和mininet为范例，展示了厂商定制化的driver如何实现，可以作为指导性的开发样本，下面以HP3800为例简单说明。
+HP3800创建OpenFlowDeviceDriver实现DIDM中定义的driver，如下所示：
+
+```java
+/**
+ * The HP 3800 OF driver does the following:
+ *
+ * 1. listen for node added/removed in inventory (future: filtered by device type)
+ * 2. when a HP 3800 node is added, register the routed RPCs (other driver types may register as DCLs for a feature such as vlan)
+ * 3. when a HP 3800 node is removed, close the RPC registration (and/or DCLs for other driver types)
+ */
+public class OpenFlowDeviceDriver implements OpenflowFeatureService, DataChangeListener, AutoCloseable {
+```
+
+OpenFlowDeviceDriver实现了OpenflowFeatureService、DataChangeListener和AutoCloseable三个接口，因此OpenFlowDeviceDriver具备了三个功能：
+
+- 实现OpenflowFeatureService中的adjustFlow方法
+- 监听inventory数据变化
+- 能够自动释放申请的资源
+
+OpenFlowDeviceDriver实例在创建时，就注册监听inventory node中的DeviceType数据变化，该数据变化来自**identification**中介绍的设备识别流程，如下所示：
+
+```java
+private static final InstanceIdentifier<DeviceType> PATH = InstanceIdentifier.builder(Nodes.class).child(Node.class).augmentation(DeviceType.class).build();
+    
+    ...
+    
+public OpenFlowDeviceDriver(DataBroker dataBroker, RpcProviderRegistry rpcRegistry) {
+     this.rpcRegistry = Preconditions.checkNotNull(rpcRegistry);
+
+     // register listener for Node, in future should be filtered by device type
+     // subscribe to be notified when a device-type augmentation is applied to an inventory node
+     dataChangeListenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, PATH, this, AsyncDataBroker.DataChangeScope.BASE);
+}
+```
+
+当监听数据变化时，OpenFlowDeviceDriver在onDataChanged方法中对其持有的RPC进行相应操作，首先，当DeviceType变化为添加时，过滤属于HP3800的变化，并按node节点注册routed RPC，如下所示：
