@@ -219,3 +219,46 @@ setDeviceType(UNKNOWN_DEVICE_TYPE, path);
 ```
 
 ##drivers
+
+在*openflow-feature.yang*定义了RPC adjustFlow，由各厂商的驱动实现此RPC，如下所示：
+
+```
+rpc adjust-flow {
+description "Adjust the provided flow, if necessary, based on the node's actual capabilities.
+             Depending on the node's capabilities, multiple flows may be returned.";
+
+input {
+
+    uses "inv:node-context-ref";
+
+    container flow {
+       description "The flow to be adjusted.";
+       uses flow:flow;
+    }
+}
+
+output {
+   list flow {
+      description "The node-compatible flow(s) equivalent to the input flow.";
+      uses flow:flow;
+   }
+}
+}
+```
+
+上述RPC的入参为node-context-ref与flow，出参为flow列表，编译后产生标准接口OpenflowFeatureService，如下所示，厂商驱动将负责实现该接口，可以在vendor目录下查看hp与mininet的范例实现。
+
+```java
+public interface OpenflowFeatureService
+    extends
+    RpcService
+{
+    /**
+     * Adjust the provided flow, if necessary, based on the node's actual capabilities.
+     * Depending on the node's capabilities, multiple flows may be returned.
+     *
+     */
+    Future<RpcResult<AdjustFlowOutput>> adjustFlow(AdjustFlowInput input);
+
+}
+```
