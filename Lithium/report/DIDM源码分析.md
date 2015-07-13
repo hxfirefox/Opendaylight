@@ -18,6 +18,10 @@ DIDM框架提供了以下功能：
 - **通用特性的数据模型(Data Models for Common Features)** – 定义通用特性(例如，VLAN配置)的数据模型，一旦定义所述数据模型，则对通用特性的操作可以通过将数据写入模型的方式进行
 - **通用特性的RPC(RPCs for Common Features)** – 通用特性的API采用RPC方式，驱动实现RPC以支持相关特性
 
+#集群支持
+
+DIDM由于是MD-SAL应用，因此可进行集群配置
+
 #处理流程
 
 >用于手动发现的API将在下个版本中提供
@@ -344,3 +348,73 @@ public Future<RpcResult<AdjustFlowOutput>> adjustFlow(AdjustFlowInput input) {
     return Futures.immediateFuture(RpcResultBuilder.success(output).build());
 }
 ```
+
+##state
+除去上述**identification**、**drivers**、**vendor**外，DIDM项目下的state对inventory node进行了一进步扩展，在*didm-state.yang*定义了node状态，如下所示：
+
+```
+augment "/inv:nodes/inv:node" {
+        ext:augment-identifier "device-state";
+        description "provides an augmentation on the ODL inventory node that provides
+                state information for a device.";
+
+        container managed {
+            description "state indicating if a given device is being actively managed
+                        by the controller.";
+            leaf managed {
+                type boolean;
+            }
+            uses change_info;
+        }
+        container synchronize {
+            description "state indicating in which phase of synchronization the device
+                        is currently";
+            leaf state {
+                type enumeration {
+                    enum unsynchronized {
+                        description "No attempt has been made to synchronize device or for some reason,
+                                                such as loss of communications, the device is considered out of
+                                                synchronization";
+                    }
+                    enum synchronizing {
+                        description "Device is currently being synchronized.";
+                    }
+                    enum synchronized {
+                        description "Device has been successfully synchronized;";
+                    }
+                    enum error {
+                        description "An error was encountered during last synchronization attempt.";
+                    }
+                }
+            }
+            uses attempt_info;
+        }
+        container communication {
+            description "state indicating if communications to the device are functional.";
+            leaf state {
+                type enumeration {
+                    enum up {
+                        description "Communications are known to be functional.";
+                    }
+                    enum down {
+                        description "Communications are known to be non-functional.";
+                    }
+                }
+            }
+            uses attempt_info;
+        }
+    }
+```
+
+其中定义了若干中状态，这些状态应当是DIDM完成设备识别及各厂商驱动完成注册后，填充至inventory node中，类似DeviceType的操作方式，目前GitHub上的版本未包含该部分代码将如何使用的部分，从描述性信息分析应当是由各厂商驱动负责处理，完成流程处理图中的步骤6，此部分内容应当能在ODL提供的发布版本中可以找到。
+
+#结论
+
+DIDM实现功能比较简单，主要是通过对inventory node的拓展来实现附加信息的实现，同时注册routed RPC提供基于设备绑定的功能调用。
+
+##存在的问题
+
+- 从目前获得源码结构看，尚有两点在源码中没有体现，分别是处理流程图中步骤1与步骤6
+- DeviceTypes信息的来源不清楚，个人认为配置是一种比较可能的数据来源，即每一种设备的元数据(制造商、硬件信息等)应当依赖外部导入
+- DIDM目前只实现了其描述举例中的调整流接口，即adjustFlow，而对VLAN配置没有提及
+- 对于adjustFlow的使用没有明确的说明，从现在给出的接口，不太清楚这样的流调整对上层应用究竟有何意义，是否上层应用直接调用adjustFlow接口就可以完成流表修改
