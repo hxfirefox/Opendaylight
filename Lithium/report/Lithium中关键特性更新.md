@@ -224,7 +224,7 @@ Lithium相对于Helium更新特性共27项，其中原有特性提升或增强13
 
 **更新：**
 
-- 增加Yang模型来表示SFC；接收来自REST和RPC的需求表达式；构建SFC的界面；LISP支持；负载均衡功能分组；NSH、MPLS及VLAN的OF渲染器；南向REST接口；SFC-OVS for SFF bridges, tunnels, and ports CRUD via OVSDB; 报文分发器；与ODL_GBP集成
+- 增加Yang模型来表示SFC；接收来自REST和RPC的需求表达式；构建SFC的界面；LISP支持；负载均衡功能分组；NSH、MPLS及VLAN的OF渲染器；南向REST接口；SFC-OVS通过OVSDB对SFF桥、隧道、端口增删改查; 报文分发器；与ODL_GBP集成
 
 ##SNMP4SDN
 
