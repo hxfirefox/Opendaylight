@@ -262,3 +262,7 @@ public interface OpenflowFeatureService
 
 }
 ```
+
+##vendor
+
+在此目录下，以HP3800和mininet为范例，展示了厂商定制化的driver如何实现，下面以HP3800为例简单说明。
