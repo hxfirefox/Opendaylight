@@ -301,7 +301,7 @@ public OpenFlowDeviceDriver(DataBroker dataBroker, RpcProviderRegistry rpcRegist
 }
 ```
 
-当监听数据变化时，OpenFlowDeviceDriver在onDataChanged方法中对其持有的RPC进行相应操作，首先，当DeviceType变化为添加时，过滤属于HP3800的变化，并按node节点注册routed RPC，并添加相应记录，如下所示：
+当监听数据变化时，OpenFlowDeviceDriver在onDataChanged方法中对其持有的RPC进行相应操作，首先，当DeviceType变化为添加时，过滤属于HP3800的变化，并按node节点注册routed RPC，如下所示：
 
 ```java
 if(createdData != null) {
@@ -314,7 +314,7 @@ if(createdData != null) {
 }
 ```
 
-当DeviceType变化为移除时，同样的操作，此时需要按node移除注册记录，如下所示：
+当DeviceType变化为移除时，同样的操作，此时需要按node移除注册，如下所示：
 
 ```java
 if((removedPaths != null) && !removedPaths.isEmpty()) {
@@ -324,5 +324,23 @@ if((removedPaths != null) && !removedPaths.isEmpty()) {
             closeRpcRegistration(removedPath.firstIdentifierOf(Node.class));
         }
     }
+}
+```
+
+>提供的范例代码中未对DeviceType变化为更新进行处理
+
+在注册RPC后，HP3800提供的RPC服务正式可用，HP3800中的adjustFlow方法只能提供简单的实现，并无实际功能，如下所示：
+
+```java
+@Override
+public Future<RpcResult<AdjustFlowOutput>> adjustFlow(AdjustFlowInput input) {
+    LOG.debug("HP 3800 adjustFlow");
+
+    // TODO: should this be a deep copy?
+    List<Flow> adjustedFlows = ImmutableList.of(new FlowBuilder(input.getFlow()).build());
+
+    // TODO: finish this method, but for now just return the same flow that was receive
+    AdjustFlowOutput output = new AdjustFlowOutputBuilder().setFlow(adjustedFlows).build();
+    return Futures.immediateFuture(RpcResultBuilder.success(output).build());
 }
 ```
