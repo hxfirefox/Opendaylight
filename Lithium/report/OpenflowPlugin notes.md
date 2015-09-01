@@ -329,4 +329,28 @@ public List<DataObject> translate(SwitchConnectionDistinguisher cookie,
 
 # MDController
 
-调用
+方法start创建了SwitchConnectionHandlerImpl对象，此处似乎与上图不符，如下：
+
+```java
+public void start() {
+    LOG.debug("starting ..");
+    LOG.debug("switchConnectionProvider: " + switchConnectionProviders);
+    // setup handler
+    SwitchConnectionHandlerImpl switchConnectionHandler = new SwitchConnectionHandlerImpl(); // 实际创建了一个queuekeeper
+    switchConnectionHandler.setMessageSpy(messageSpyCounter);
+
+    errorHandler = new ErrorHandlerSimpleImpl(); // 为捕获异常创建实例
+
+    switchConnectionHandler.setErrorHandler(errorHandler);
+    switchConnectionHandler.init(); // 经过调用，真正地注册了translator和popListener
+
+    List<ListenableFuture<Boolean>> starterChain = new ArrayList<>(switchConnectionProviders.size());
+    for (SwitchConnectionProvider switchConnectionPrv : switchConnectionProviders) {
+        switchConnectionPrv.setSwitchConnectionHandler(switchConnectionHandler);
+        ListenableFuture<Boolean> isOnlineFuture = switchConnectionPrv.startup();
+        starterChain.add(isOnlineFuture);
+    }
+
+    Future<List<Boolean>> srvStarted = Futures.allAsList(starterChain);
+}
+```
